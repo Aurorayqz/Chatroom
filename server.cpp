@@ -4,7 +4,7 @@ int main( int argc, char const *argv[] )
 {
 	struct sockaddr_in serverAddr;
 	serverAddr.sin_family		= PF_INET;
-	serverAddr.sin_port			= htons( SERVER_PORT );
+	serverAddr.sin_port		= htons( SERVER_PORT );
 	serverAddr.sin_addr.s_addr	= inet_addr( SERVER_IP );
 
 	int listener = socket( PF_INET, SOCK_STREAM, 0 );
