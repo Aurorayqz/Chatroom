@@ -1,6 +1,6 @@
 #include "utility.h"
 
-int main( int argc, char const *argv[] )
+int main( int argc, char *argv[] )
 {
 	struct sockaddr_in serverAddr;
 	serverAddr.sin_family		= PF_INET;
@@ -10,8 +10,7 @@ int main( int argc, char const *argv[] )
 	int listener = socket( PF_INET, SOCK_STREAM, 0 );
 	if ( listener < 0 )
 	{
-		perror( "listener" );
-		exit( -1 );
+		perror( "listener" ); exit( -1 );
 	}
 	printf( "listen socket created \n" );
 
@@ -24,16 +23,14 @@ int main( int argc, char const *argv[] )
 	int ret = listen( listener, 5 );
 	if ( ret < 0 )
 	{
-		perror( "listen error" );
-		exit( -1 );
+		perror( "listen error" ); exit( -1 );
 	}
 	printf( "Start to listen: %s\n", SERVER_IP );
 
 	int epfd = epoll_create( EPOLL_SIZE );
 	if ( epfd < 0 )
 	{
-		perror( "epfd error" );
-		exit( -1 );
+		perror( "epfd error" ); exit( -1 );
 	}
 	printf( "epoll created, epollfd = %d\n", epfd );
 	static struct epoll_event events[EPOLL_SIZE];
@@ -48,6 +45,7 @@ int main( int argc, char const *argv[] )
 			perror( "epoll failure" );
 			break;
 		}
+
 		printf( "epoll_events_count = %d\n", epoll_events_count );
 
 		for ( int i = 0; i < epoll_events_count; ++i )
@@ -58,34 +56,33 @@ int main( int argc, char const *argv[] )
 			{
 				struct sockaddr_in	client_address;
 				socklen_t		client_addrLength	= sizeof(struct sockaddr_in);
-				int			clientfd		= accept( listener, (struct sockaddr *) &client_address, &client_addrLength );
+				int			clientfd		= accept( listener, ( struct sockaddr * ) &client_address, &client_addrLength );
+
 				printf( "client connection from: %s : % d(IP : port), clientfd = %d \n",
 					inet_ntoa( client_address.sin_addr ),
 					ntohs( client_address.sin_port ),
-					clientfd
-					);
+					clientfd );
+
 				addfd( epfd, clientfd, true );
 
 				clients_list.push_back( clientfd );
 				printf( "Add new clientfd = %d to epoll\n", clientfd );
 				printf( "Now there are %d clients int the chat room\n", (int) clients_list.size() );
-				printf( "welcome message\n" );
 
+				printf( "welcome message\n" );
 				char message[BUF_SIZE];
 				bzero( message, BUF_SIZE );
 				sprintf( message, SERVER_WELCOME, clientfd );
 				int ret = send( clientfd, message, BUF_SIZE, 0 );
 				if ( ret < 0 )
 				{
-					perror( "send error" );
-					exit( -1 );
-				}else  {
-					int ret = sendBroadcastmessage( sockfd );
-					if ( ret < 0 )
-					{
-						perror( "error" );
-						exit( -1 );
-					}
+					perror( "send error" ); exit( -1 );
+				}
+			}else {
+				int ret = sendBroadcastmessage( sockfd );
+				if ( ret < 0 )
+				{
+					perror( "error" ); exit( -1 );
 				}
 			}
 		}

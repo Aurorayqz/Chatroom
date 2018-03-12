@@ -41,19 +41,19 @@ int setnonblocking( int sockfd )
 	return(0);
 }
 
+
 void addfd( int epollfd, int fd, bool enable_et )
 {
 	struct epoll_event ev;
 	ev.data.fd	= fd;
 	ev.events	= EPOLLIN;
 	if ( enable_et )
-	{
 		ev.events = EPOLLIN | EPOLLET;
-	}
 	epoll_ctl( epollfd, EPOLL_CTL_ADD, fd, &ev );
 	setnonblocking( fd );
 	printf( "fd added to epoll!\n\n" );
 }
+
 
 int sendBroadcastmessage( int clientfd )
 {
@@ -75,7 +75,6 @@ int sendBroadcastmessage( int clientfd )
 			send( clientfd, CAUTION, strlen( CAUTION ), 0 );
 			return(len);
 		}
-
 		sprintf( message, SERVER_MESSAGE, clientfd, buf );
 
 		list<int>::iterator it;
@@ -85,13 +84,13 @@ int sendBroadcastmessage( int clientfd )
 			{
 				if ( send( *it, message, BUF_SIZE, 0 ) < 0 )
 				{
-					perror( "error" );
-					exit( -1 );
+					perror( "error" ); exit( -1 );
 				}
 			}
 		}
 	}
 	return(len);
 }
+
 
 #endif /* UTILITY_H_INCLUDED */
